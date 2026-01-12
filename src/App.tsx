@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ChipPlayground } from './ChipPlayground';
 import { CellPlayground } from './CellPlayground';
 import { SearchInputPlayground } from './SearchInputPlayground';
@@ -63,14 +63,14 @@ const PlaygroundApp: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/playground/*" element={<PlaygroundApp />} />
         <Route path="/skill/:skillId" element={<SkillPage />} />
         <Route path="/" element={<MainFeedbackPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
