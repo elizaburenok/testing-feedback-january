@@ -5,7 +5,7 @@ import path from 'path';
 // https://vitejs.dev/config/
 export default defineConfig({
   // Base path for GitHub Pages - matches repository name
-  base: '/feedback-testing/',
+  base: '/testing-feedback-january/',
   plugins: [react()],
   resolve: {
     alias: {
