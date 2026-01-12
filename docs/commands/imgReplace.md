@@ -1,1 +1,0 @@
-for [get the entered name of the component] replace the existing image to the attached image. make sure it fits correctly without cutting the image
