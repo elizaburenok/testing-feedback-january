@@ -13,7 +13,7 @@ import { feedbackCardsData } from '../data/feedbackCards';
 import { filterDropdownItems } from '../data/filterDropdowns';
 import '../../tokens/css-variables.css';
 import './SkillPage.css';
-import successAvatar from '../../Success-Avatar.svg';
+import successAvatar from '../assets/images/Success-Avatar.svg';
 
 export const SkillPage: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();

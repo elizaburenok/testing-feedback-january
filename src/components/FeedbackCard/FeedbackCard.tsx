@@ -2,7 +2,7 @@ import React from 'react';
 import { Cell } from '../Cell';
 import { PageAction } from '../PageAction';
 import { skillsData, competenciesData } from '../../data/skills';
-import successAvatar from '../../../Success-Avatar.svg';
+import successAvatar from '../../assets/images/Success-Avatar.svg';
 import './FeedbackCard.css';
 
 export interface MatchedSkill {
