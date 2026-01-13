@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { NavigationBar } from '../components/NavigationBar';
 import { SearchInput } from '../components/SearchInput';
 import { Chip } from '../components/Chip';
@@ -94,6 +94,7 @@ const SuccessAvatarIcon: React.FC = () => (
 
 export const MainFeedbackPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeFeedbackIndex, setActiveFeedbackIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -130,6 +131,32 @@ export const MainFeedbackPage: React.FC = () => {
       status: 'success' as const,
     },
   ];
+
+  const scrollToTopInstant = () => {
+    const html = document.documentElement;
+    const body = document.body;
+
+    const prevHtml = html.style.scrollBehavior;
+    const prevBody = body.style.scrollBehavior;
+
+    html.style.scrollBehavior = 'auto';
+    body.style.scrollBehavior = 'auto';
+
+    window.scrollTo(0, 0);
+
+    html.style.scrollBehavior = prevHtml;
+    body.style.scrollBehavior = prevBody;
+  };
+
+  useEffect(() => {
+    const state = location.state as { openDrawerFromSkill?: boolean } | null;
+
+    if (state?.openDrawerFromSkill) {
+      setIsSidebarOpen(true);
+      scrollToTopInstant();
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   // Helper function to format activity count with Russian pluralization
   const getActivityLabel = (count: number): string => {
