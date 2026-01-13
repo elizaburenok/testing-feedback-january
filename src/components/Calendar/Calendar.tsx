@@ -98,6 +98,17 @@ export const Calendar: React.FC<CalendarProps> = ({
     return new Date(today.getFullYear(), today.getMonth(), 1);
   });
 
+  // Update current month when calendar opens or initialMonth/selectedDate changes
+  useEffect(() => {
+    if (open) {
+      if (initialMonth) {
+        setCurrentMonth(new Date(initialMonth.getFullYear(), initialMonth.getMonth(), 1));
+      } else if (selectedDate) {
+        setCurrentMonth(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1));
+      }
+    }
+  }, [open, initialMonth, selectedDate]);
+
   // Handle click outside to close
   useEffect(() => {
     if (!open) return;
