@@ -42,9 +42,10 @@ export const SkillPage: React.FC = () => {
   }, [skillId]);
 
 
-  // Filter feedback cards by search query
+  // Filter feedback cards by search query and rating
   const normalizedQuery = searchQuery.trim().toLowerCase();
-  const filteredFeedbackCards = skillFeedbackCards.filter((card) => {
+  const filteredFeedbackCards = skillFeedbackCards.filter((card, index) => {
+    // Search query filter
     if (normalizedQuery) {
       const author = card.author.toLowerCase();
       const strengths = card.strengths.toLowerCase();
@@ -55,6 +56,23 @@ export const SkillPage: React.FC = () => {
         growth.includes(normalizedQuery);
       if (!matchesSearch) return false;
     }
+
+    // Rating filter
+    if (selectedFilters.rating) {
+      // Assign rating based on index (same logic as in render)
+      const ratings = ['Хорошо справляется', 'Хорошо справляется', 'Обратить внимание', 'Поработать над этим'];
+      const cardRating = ratings[index % ratings.length] || 'Хорошо справляется';
+      
+      // Map filter labels to card ratings
+      // "Хорошо справляется" matches "Хорошо справляется"
+      // "Стоит обратить внимание" matches "Обратить внимание" and "Поработать над этим"
+      if (selectedFilters.rating === 'Хорошо справляется') {
+        if (cardRating !== 'Хорошо справляется') return false;
+      } else if (selectedFilters.rating === 'Стоит обратить внимание') {
+        if (cardRating === 'Хорошо справляется') return false;
+      }
+    }
+
     return true;
   });
 
@@ -217,13 +235,19 @@ export const SkillPage: React.FC = () => {
                   variant="dropdown"
                   label={selectedFilters.rating || "Оценка"}
                   dropdownOpen={openDropdown === 'rating'}
+                  selected={!!selectedFilters.rating}
+                  showResetIcon={!!selectedFilters.rating}
                   onClick={() => setOpenDropdown(openDropdown === 'rating' ? null : 'rating')}
+                  onReset={() => {
+                    setSelectedFilters({ ...selectedFilters, rating: undefined });
+                    setOpenDropdown(null);
+                  }}
                 />
                 {openDropdown === 'rating' && (
                   <Dropdown
                     type="list"
                     mode="desktop"
-                    items={[]}
+                    items={filterDropdownItems.rating}
                     open={true}
                     onSelect={(item) => {
                       setSelectedFilters({ ...selectedFilters, rating: item.label });

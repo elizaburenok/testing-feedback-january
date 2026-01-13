@@ -107,6 +107,8 @@ export const MainFeedbackPage: React.FC = () => {
   const [selectedSkillIds, setSelectedSkillIds] = useState<Set<string>>(new Set());
   const [selectedCompetencyId, setSelectedCompetencyId] = useState<string | undefined>(undefined);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [drawerRatingFilter, setDrawerRatingFilter] = useState<string | null>(null);
+  const [drawerOpenDropdown, setDrawerOpenDropdown] = useState<string | null>(null);
   const competencies = [
     {
       title: 'Знания',
@@ -521,8 +523,36 @@ export const MainFeedbackPage: React.FC = () => {
             </div>
 
             <div className="main-feedback-page__drawer-filters">
-              <Chip variant="dropdown" label="Компетенции" />
-              <Chip variant="dropdown" label="Оценка" />
+              <div className="main-feedback-page__filter-wrapper">
+                <Chip variant="dropdown" label="Компетенции" />
+              </div>
+              <div className="main-feedback-page__filter-wrapper">
+                <Chip
+                  variant="dropdown"
+                  label={drawerRatingFilter || "Оценка"}
+                  dropdownOpen={drawerOpenDropdown === 'rating'}
+                  selected={!!drawerRatingFilter}
+                  showResetIcon={!!drawerRatingFilter}
+                  onClick={() => setDrawerOpenDropdown(drawerOpenDropdown === 'rating' ? null : 'rating')}
+                  onReset={() => {
+                    setDrawerRatingFilter(null);
+                    setDrawerOpenDropdown(null);
+                  }}
+                />
+                {drawerOpenDropdown === 'rating' && (
+                  <Dropdown
+                    type="list"
+                    mode="desktop"
+                    items={filterDropdownItems.rating}
+                    open={true}
+                    onSelect={(item) => {
+                      setDrawerRatingFilter(item.label);
+                      setDrawerOpenDropdown(null);
+                    }}
+                    onClose={() => setDrawerOpenDropdown(null)}
+                  />
+                )}
+              </div>
             </div>
 
             <div className="main-feedback-page__drawer-competencies">
@@ -558,34 +588,49 @@ export const MainFeedbackPage: React.FC = () => {
                   const isCardWithAttentionLabel = activeFeedbackIndex === 3 || activeFeedbackIndex === 4;
                   const defaultCellLabel = isCardWithAttentionLabel ? 'Стоит обратить внимание' : 'Хорошо справляется';
                   
-                  return cardSkills.map((skill) => {
-                    const competency = competenciesData.find(
-                      (comp) => comp.id === skill.competencyId
-                    );
-                    const useSuccessIcon = successSkillIds.has(skill.id) || wellPerformingSkillIds.has(skill.id);
-                    // Use 'Хорошо справляется' for specific skillIds, otherwise use default label
-                    // For card at index 4, use 'Хорошо справляется' for skillIds in wellPerformingSkillIdsCard4
-                    const cellLabel = wellPerformingSkillIds.has(skill.id) || (activeFeedbackIndex === 4 && wellPerformingSkillIdsCard4.has(skill.id)) ? 'Хорошо справляется' : defaultCellLabel;
-                    return (
-                      <Cell
-                        key={skill.id}
-                        size="L"
-                        subtitle={competency?.label || 'Компетенция'}
-                        label={cellLabel}
-                      icon={
-                        <div className="main-feedback-page__skill-icon-wrapper">
-                          {useSuccessIcon ? <SuccessAvatarIcon /> : <WarningAvatarIcon />}
-                        </div>
+                  return cardSkills
+                    .filter((skill) => {
+                      // Filter by rating if drawerRatingFilter is set
+                      if (drawerRatingFilter) {
+                        const useSuccessIcon = successSkillIds.has(skill.id) || wellPerformingSkillIds.has(skill.id);
+                        const cellLabel = wellPerformingSkillIds.has(skill.id) || (activeFeedbackIndex === 4 && wellPerformingSkillIdsCard4.has(skill.id)) ? 'Хорошо справляется' : defaultCellLabel;
+                        
+                        if (drawerRatingFilter === 'Хорошо справляется') {
+                          return cellLabel === 'Хорошо справляется';
+                        } else if (drawerRatingFilter === 'Стоит обратить внимание') {
+                          return cellLabel !== 'Хорошо справляется';
+                        }
                       }
-                        onClick={() => {
-                          navigate(`/skill/${skill.id}`);
-                          setIsSidebarOpen(false);
-                        }}
-                      >
-                        {skill.label}
-                      </Cell>
-                    );
-                  });
+                      return true;
+                    })
+                    .map((skill) => {
+                      const competency = competenciesData.find(
+                        (comp) => comp.id === skill.competencyId
+                      );
+                      const useSuccessIcon = successSkillIds.has(skill.id) || wellPerformingSkillIds.has(skill.id);
+                      // Use 'Хорошо справляется' for specific skillIds, otherwise use default label
+                      // For card at index 4, use 'Хорошо справляется' for skillIds in wellPerformingSkillIdsCard4
+                      const cellLabel = wellPerformingSkillIds.has(skill.id) || (activeFeedbackIndex === 4 && wellPerformingSkillIdsCard4.has(skill.id)) ? 'Хорошо справляется' : defaultCellLabel;
+                      return (
+                        <Cell
+                          key={skill.id}
+                          size="L"
+                          subtitle={competency?.label || 'Компетенция'}
+                          label={cellLabel}
+                        icon={
+                          <div className="main-feedback-page__skill-icon-wrapper">
+                            {useSuccessIcon ? <SuccessAvatarIcon /> : <WarningAvatarIcon />}
+                          </div>
+                        }
+                          onClick={() => {
+                            navigate(`/skill/${skill.id}`);
+                            setIsSidebarOpen(false);
+                          }}
+                        >
+                          {skill.label}
+                        </Cell>
+                      );
+                    });
                 })()
               ) : (
                 // Fallback: show competencies if no card is selected
