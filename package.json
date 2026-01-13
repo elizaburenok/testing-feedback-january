@@ -2,10 +2,13 @@
   "name": "feedback-testing",
   "version": "1.0.0",
   "description": "React components with design tokens from Figma",
+  "homepage": "https://elizaburenok.github.io/testing-feedback-january",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "build:test": "vite build --mode test",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
