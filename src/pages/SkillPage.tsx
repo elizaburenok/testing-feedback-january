@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { NavigationBar } from '../components/NavigationBar';
 import { SearchInput } from '../components/SearchInput';
@@ -22,6 +22,11 @@ export const SkillPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [selectedFilters, setSelectedFilters] = useState<{ author?: string; period?: string; rating?: string }>({});
+
+  // Ensure page opens scrolled to the top whenever skill changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [skillId]);
 
   // Find the skill by ID
   const skill = skillsData.find((s) => s.id === skillId);
