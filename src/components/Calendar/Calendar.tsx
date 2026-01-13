@@ -154,24 +154,27 @@ export const Calendar: React.FC<CalendarProps> = ({
   // Generate calendar grid
   const firstDay = getFirstDayOfMonth(currentMonth);
   const daysInMonth = getDaysInMonth(currentMonth);
-  const days: Array<{ day: number; isCurrentMonth: boolean }> = [];
+  const currentYear = currentMonth.getFullYear();
+  const currentMonthIndex = currentMonth.getMonth();
+  
+  const days: Array<{ day: number; isCurrentMonth: boolean; monthOffset: number }> = [];
 
   // Add days from previous month
-  const prevMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 0);
-  const daysInPrevMonth = prevMonth.getDate();
+  const prevMonthDate = new Date(currentYear, currentMonthIndex - 1, 0);
+  const daysInPrevMonth = prevMonthDate.getDate();
   for (let i = firstDay - 1; i >= 0; i--) {
-    days.push({ day: daysInPrevMonth - i, isCurrentMonth: false });
+    days.push({ day: daysInPrevMonth - i, isCurrentMonth: false, monthOffset: -1 });
   }
 
   // Add days from current month
   for (let day = 1; day <= daysInMonth; day++) {
-    days.push({ day, isCurrentMonth: true });
+    days.push({ day, isCurrentMonth: true, monthOffset: 0 });
   }
 
   // Add days from next month to fill the grid (6 rows = 42 cells)
   const remainingCells = 42 - days.length;
   for (let day = 1; day <= remainingCells; day++) {
-    days.push({ day, isCurrentMonth: false });
+    days.push({ day, isCurrentMonth: false, monthOffset: 1 });
   }
 
   const monthName = MONTH_NAMES_FULL[currentMonth.getMonth()];
@@ -231,16 +234,10 @@ export const Calendar: React.FC<CalendarProps> = ({
 
         {/* Days grid */}
         <div className="calendar__days">
-          {days.map(({ day, isCurrentMonth }, index) => {
-            const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-            if (!isCurrentMonth) {
-              // Adjust for previous/next month days
-              if (index < firstDay) {
-                date.setMonth(currentMonth.getMonth() - 1);
-              } else {
-                date.setMonth(currentMonth.getMonth() + 1);
-              }
-            }
+          {days.map(({ day, isCurrentMonth, monthOffset }, index) => {
+            // Create date directly in the correct month to avoid auto-rollover issues
+            // when the day number doesn't exist in the current month
+            const date = new Date(currentYear, currentMonthIndex + monthOffset, day);
             
             const isSelected = selectedDate ? isSameDay(date, selectedDate) : false;
             const isTodayDate = isToday(date);
