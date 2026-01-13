@@ -8,9 +8,11 @@ import { Cell } from '../components/Cell';
 import { DrawerHeader, DrawerFooter } from '../components/Drawer';
 import { Dropdown } from '../components/Dropdown';
 import { SkillsModal } from '../components/SkillsModal';
+import { Calendar } from '../components/Calendar';
 import { feedbackCardsData } from '../data/feedbackCards';
 import { filterDropdownItems } from '../data/filterDropdowns';
 import { skillsData, competenciesData } from '../data/skills';
+import { formatDateShort, isSameDay } from '../utils/dateFormat';
 import '../../tokens/css-variables.css';
 import './MainFeedbackPage.css';
 
@@ -104,6 +106,7 @@ export const MainFeedbackPage: React.FC = () => {
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
   const [selectedSkillIds, setSelectedSkillIds] = useState<Set<string>>(new Set());
   const [selectedCompetencyId, setSelectedCompetencyId] = useState<string | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const competencies = [
     {
       title: 'Знания',
@@ -233,6 +236,14 @@ export const MainFeedbackPage: React.FC = () => {
       if (!matchesSearch) return false;
     }
 
+    // Date filter - card must match the selected date
+    if (selectedDate) {
+      const cardDate = typeof card.date === 'string' ? new Date(card.date) : card.date;
+      if (!isSameDay(cardDate, selectedDate)) {
+        return false;
+      }
+    }
+
     // Activity type filter - card must match one of the selected activity types
     if (checkedActivities.size > 0) {
       const cardActivityId = getCardActivityId(card.name);
@@ -336,21 +347,26 @@ export const MainFeedbackPage: React.FC = () => {
               <div className="main-feedback-page__filter-wrapper">
                 <Chip
                   variant="dropdown"
-                  label={selectedFilters.period || "Период"}
+                  label={selectedDate ? formatDateShort(selectedDate) : "Период"}
                   dropdownOpen={openDropdown === 'period'}
+                  selected={!!selectedDate}
+                  showResetIcon={!!selectedDate}
                   onClick={() => setOpenDropdown(openDropdown === 'period' ? null : 'period')}
+                  onReset={() => {
+                    setSelectedDate(null);
+                    setOpenDropdown(null);
+                  }}
                 />
                 {openDropdown === 'period' && (
-                  <Dropdown
-                    type="list"
-                    mode="desktop"
-                    items={filterDropdownItems.period}
+                  <Calendar
                     open={true}
-                    onSelect={(item) => {
-                      setSelectedFilters({ ...selectedFilters, period: item.label });
+                    selectedDate={selectedDate}
+                    onSelect={(date) => {
+                      setSelectedDate(date);
                       setOpenDropdown(null);
                     }}
                     onClose={() => setOpenDropdown(null)}
+                    initialMonth={selectedDate || new Date()}
                   />
                 )}
               </div>

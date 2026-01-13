@@ -209,6 +209,11 @@
   left: 0;
 }
 
+.main-feedback-page__filter-wrapper .calendar {
+  top: calc(100% + 8px);
+  left: 0;
+}
+
 /* List Section */
 .main-feedback-page__list {
   display: flex;
