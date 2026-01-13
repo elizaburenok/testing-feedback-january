@@ -21,6 +21,14 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       open: true,
     },
+    preview: {
+      port: 4173,
+      strictPort: false,
+    },
+    build: {
+      outDir: 'dist',
+      assetsDir: 'assets',
+    },
   };
 });
 
