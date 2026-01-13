@@ -146,6 +146,21 @@ export const MainFeedbackPage: React.FC = () => {
     return `${count} активностей`;
   };
 
+  // Helper function to format skills count with Russian pluralization
+  const getSkillsLabel = (count: number): string => {
+    if (count === 0) {
+      return 'Навык';
+    }
+    if (count === 1) {
+      return '1 навык';
+    }
+    if (count >= 2 && count <= 4) {
+      return `${count} навыка`;
+    }
+    // 5+ items
+    return `${count} навыков`;
+  };
+
   // Map activity type labels (from card names) to dropdown IDs
   const activityTypeToIdMap: { [key: string]: string } = {
     'Чек-беседа': 'Check-meeting',
@@ -349,7 +364,7 @@ export const MainFeedbackPage: React.FC = () => {
               </div>
               <Chip
                 variant="action"
-                label="Навык"
+                label={getSkillsLabel(selectedSkillIds.size)}
                 selected={selectedSkillIds.size > 0}
                 showResetIcon={selectedSkillIds.size > 0}
                 onClick={() => setIsSkillsModalOpen(true)}
