@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:test": "vite build --mode test",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "test:chip-playground": "node -e \"console.log('Mount ChipPlayground in your React app or Storybook to test visually.')\""
