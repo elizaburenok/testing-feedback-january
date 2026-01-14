@@ -154,11 +154,6 @@ export const MainFeedbackPage: React.FC = () => {
   };
 
   useEffect(() => {
-    // Scroll to top when page loads
-    scrollToTopInstant();
-  }, []);
-
-  useEffect(() => {
     const state = location.state as { openDrawerFromSkill?: boolean } | null;
 
     if (state?.openDrawerFromSkill) {
