@@ -154,6 +154,11 @@ export const MainFeedbackPage: React.FC = () => {
   };
 
   useEffect(() => {
+    // Scroll to top when page loads
+    scrollToTopInstant();
+  }, []);
+
+  useEffect(() => {
     const state = location.state as { openDrawerFromSkill?: boolean } | null;
 
     if (state?.openDrawerFromSkill) {
@@ -475,7 +480,9 @@ export const MainFeedbackPage: React.FC = () => {
           hasTextBlock
           title="Обратная связь"
           subtitle="Константинопольский Василий Аркадьевич — Специалист"
-          onBackClick={() => console.log('Back clicked')}
+          onBackClick={() => {
+            navigate('/');
+          }}
         />
       </div>
 

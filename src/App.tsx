@@ -12,6 +12,7 @@ import { VerticalMarkerPlayground } from './VerticalMarkerPlayground';
 import { BarGraphPlayground } from './BarGraphPlayground';
 import { MainFeedbackPage } from './pages/MainFeedbackPage';
 import { SkillPage } from './pages/SkillPage';
+import { ProfilePage } from './pages/ProfilePage';
 import './App.css';
 
 type PlaygroundTab = 'chip' | 'cell' | 'search' | 'pageaction' | 'feedbackcard' | 'navigationbar' | 'dropdown' | 'button' | 'verticalmarker' | 'bargraph' | 'mainfeedback';
@@ -67,7 +68,8 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/playground/*" element={<PlaygroundApp />} />
         <Route path="/skill/:skillId" element={<SkillPage />} />
-        <Route path="/" element={<MainFeedbackPage />} />
+        <Route path="/feedback" element={<MainFeedbackPage />} />
+        <Route path="/" element={<ProfilePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>
