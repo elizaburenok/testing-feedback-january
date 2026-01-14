@@ -7,7 +7,7 @@
 .page-action {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center; /* vertically center text relative to icon/content */
   gap: 10px;
   padding: 10px 16px;
   border: none;
