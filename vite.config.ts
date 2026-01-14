@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
       strictPort: false,
     },
     build: {
-      outDir: 'dist',
+      outDir: 'docs',
       assetsDir: 'assets',
     },
   };
