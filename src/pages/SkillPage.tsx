@@ -305,10 +305,10 @@ export const SkillPage: React.FC = () => {
         <NavigationBar
           hasBackButton
           hasTextBlock
-          onRootLinkClick={() => navigate('/')}
+          // Back button should always return to MainFeedbackPage
           title="Навык"
           onBackClick={() =>
-            navigate('/', {
+            navigate('/feedback', {
               state: { openDrawerFromSkill: true },
             })
           }
