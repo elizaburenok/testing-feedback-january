@@ -251,7 +251,6 @@ export const ProfilePage: React.FC = () => {
           hasBackButton
           hasTextBlock
           title="Профиль"
-          subtitle="Константинопольский Василий Аркадьевич — Специалист"
           onBackClick={() => console.log('Back clicked')}
         />
       </div>
