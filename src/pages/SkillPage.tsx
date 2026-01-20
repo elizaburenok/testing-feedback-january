@@ -305,10 +305,9 @@ export const SkillPage: React.FC = () => {
         <NavigationBar
           hasBackButton
           hasTextBlock
-          onRootLinkClick={() => navigate('/')}
           title="Навык"
           onBackClick={() =>
-            navigate('/', {
+            navigate('/feedback', {
               state: { openDrawerFromSkill: true },
             })
           }
