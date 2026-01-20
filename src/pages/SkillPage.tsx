@@ -305,6 +305,7 @@ export const SkillPage: React.FC = () => {
         <NavigationBar
           hasBackButton
           hasTextBlock
+          // Back button should always return to MainFeedbackPage
           title="Навык"
           onBackClick={() =>
             navigate('/feedback', {
