@@ -14,6 +14,7 @@ import { filterDropdownItems } from '../data/filterDropdowns';
 import '../../tokens/css-variables.css';
 import './SkillPage.css';
 import successAvatar from '../assets/images/Success-Avatar.svg';
+import leftAccessory from '../assets/images/Left Accessory.svg';
 
 export const SkillPage: React.FC = () => {
   const { skillId } = useParams<{ skillId: string }>();
@@ -34,6 +35,10 @@ export const SkillPage: React.FC = () => {
 
   // Hardcoded average rating for prototype
   const averageRating = 4.2;
+
+  // Skills for which we should show "Стоит обратить внимание" in the widget
+  const isAttentionSkill =
+    skill?.label === 'Гибкость' || skill?.label === 'Ответственность';
 
   // Filter feedback cards by skill ID
   const skillFeedbackCards = useMemo(() => {
@@ -326,14 +331,14 @@ export const SkillPage: React.FC = () => {
               size="M"
               icon={
                 <img 
-                  src={successAvatar} 
-                  alt="Success avatar" 
+                  src={isAttentionSkill ? leftAccessory : successAvatar}
+                  alt={isAttentionSkill ? 'Attention avatar' : 'Success avatar'}
                   width="34" 
                   height="34"
                 />
               }
             >
-              Хорошо справляется
+              {isAttentionSkill ? 'Стоит обратить внимание' : 'Хорошо справляется'}
             </Cell>
           </div>
         </div>

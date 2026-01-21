@@ -15,6 +15,7 @@ import { skillsData, competenciesData } from '../data/skills';
 import { formatDateShort, isSameDay } from '../utils/dateFormat';
 import '../../tokens/css-variables.css';
 import './MainFeedbackPage.css';
+import leftAccessoryIcon from '../assets/images/Left Accessory.svg';
 
 const WarningAvatarIcon: React.FC = () => (
   <svg
@@ -581,58 +582,94 @@ export const MainFeedbackPage: React.FC = () => {
                   }
                   
                   // SkillIds that should use SuccessAvatarIcon
-                  const successSkillIds = new Set(['adapt-3', 'client-7', 'self-2', 'knowledge-5']);
+                  const successSkillIds = new Set(['adapt-3', 'client-7', 'knowledge-5']);
                   // SkillIds that should use 'Хорошо справляется' label and SuccessAvatarIcon
-                  const wellPerformingSkillIds = new Set(['client-4', 'adapt-1', 'self-2']);
+                  const wellPerformingSkillIds = new Set(['client-4']);
                   // SkillIds from card at index 4 (line 69-70) that should use 'Хорошо справляется' label
-                  const wellPerformingSkillIdsCard4 = new Set(['adapt-3', 'client-7', 'self-2', 'knowledge-5']);
+                  const wellPerformingSkillIdsCard4 = new Set(['adapt-3', 'client-7', 'knowledge-5']);
                   // Cards at index 3 (line 51) and index 4 (line 69-70) should use different label
                   const isCardWithAttentionLabel = activeFeedbackIndex === 3 || activeFeedbackIndex === 4;
                   const defaultCellLabel = isCardWithAttentionLabel ? 'Стоит обратить внимание' : 'Хорошо справляется';
                   
-                  return cardSkills
-                    .filter((skill) => {
-                      // Filter by rating if drawerRatingFilter is set
-                      if (drawerRatingFilter) {
-                        const useSuccessIcon = successSkillIds.has(skill.id) || wellPerformingSkillIds.has(skill.id);
-                        const cellLabel = wellPerformingSkillIds.has(skill.id) || (activeFeedbackIndex === 4 && wellPerformingSkillIdsCard4.has(skill.id)) ? 'Хорошо справляется' : defaultCellLabel;
-                        
-                        if (drawerRatingFilter === 'Хорошо справляется') {
-                          return cellLabel === 'Хорошо справляется';
-                        } else if (drawerRatingFilter === 'Стоит обратить внимание') {
-                          return cellLabel !== 'Хорошо справляется';
-                        }
-                      }
-                      return true;
-                    })
-                    .map((skill) => {
-                      const competency = competenciesData.find(
-                        (comp) => comp.id === skill.competencyId
-                      );
+                  // Filter skills by rating if drawerRatingFilter is set
+                  const filteredSkills = cardSkills.filter((skill) => {
+                    if (drawerRatingFilter) {
                       const useSuccessIcon = successSkillIds.has(skill.id) || wellPerformingSkillIds.has(skill.id);
-                      // Use 'Хорошо справляется' for specific skillIds, otherwise use default label
-                      // For card at index 4, use 'Хорошо справляется' for skillIds in wellPerformingSkillIdsCard4
                       const cellLabel = wellPerformingSkillIds.has(skill.id) || (activeFeedbackIndex === 4 && wellPerformingSkillIdsCard4.has(skill.id)) ? 'Хорошо справляется' : defaultCellLabel;
-                      return (
-                        <Cell
-                          key={skill.id}
-                          size="L"
-                          subtitle={competency?.label || 'Компетенция'}
-                          label={cellLabel}
-                        icon={
-                          <div className="main-feedback-page__skill-icon-wrapper">
-                            {useSuccessIcon ? <SuccessAvatarIcon /> : <WarningAvatarIcon />}
-                          </div>
-                        }
-                          onClick={() => {
-                            navigate(`/skill/${skill.id}`);
-                            setIsSidebarOpen(false);
-                          }}
-                        >
-                          {skill.label}
-                        </Cell>
-                      );
-                    });
+                      
+                      if (drawerRatingFilter === 'Хорошо справляется') {
+                        return cellLabel === 'Хорошо справляется';
+                      } else if (drawerRatingFilter === 'Стоит обратить внимание') {
+                        return cellLabel !== 'Хорошо справляется';
+                      }
+                    }
+                    return true;
+                  });
+
+                  // Separate skills into two groups based on icon type
+                  const successSkillIdsGroup: typeof filteredSkills = [];
+                  const warningSkillIdsGroup: typeof filteredSkills = [];
+
+                  filteredSkills.forEach((skill) => {
+                    const useSuccessIcon = successSkillIds.has(skill.id) || wellPerformingSkillIds.has(skill.id);
+                    const useLeftAccessoryIcon = skill.id === 'adapt-1' || skill.id === 'self-2';
+                    
+                    if (useSuccessIcon) {
+                      successSkillIdsGroup.push(skill);
+                    } else {
+                      // warningSkillIds group includes skills with Left Accessory icon OR WarningAvatarIcon
+                      warningSkillIdsGroup.push(skill);
+                    }
+                  });
+
+                  // Sort each group alphabetically by Russian alphabetical order (А to Я)
+                  const russianSort = (a: typeof filteredSkills[0], b: typeof filteredSkills[0]) => {
+                    return a.label.localeCompare(b.label, 'ru', { sensitivity: 'base' });
+                  };
+
+                  successSkillIdsGroup.sort(russianSort);
+                  warningSkillIdsGroup.sort(russianSort);
+
+                  // Combine groups: successSkillIds first, then warningSkillIds
+                  const sortedSkills = [...successSkillIdsGroup, ...warningSkillIdsGroup];
+
+                  return sortedSkills.map((skill) => {
+                    const competency = competenciesData.find(
+                      (comp) => comp.id === skill.competencyId
+                    );
+                    const useSuccessIcon = successSkillIds.has(skill.id) || wellPerformingSkillIds.has(skill.id);
+                    // Use 'Хорошо справляется' for specific skillIds, otherwise use default label
+                    // For card at index 4, use 'Хорошо справляется' for skillIds in wellPerformingSkillIdsCard4
+                    const cellLabel = wellPerformingSkillIds.has(skill.id) || (activeFeedbackIndex === 4 && wellPerformingSkillIdsCard4.has(skill.id)) ? 'Хорошо справляется' : defaultCellLabel;
+                    // Skills that should use LeftAccessoryIcon
+                    const useLeftAccessoryIcon = skill.id === 'adapt-1' || skill.id === 'self-2';
+                    return (
+                      <Cell
+                        key={skill.id}
+                        size="L"
+                        subtitle={competency?.label || 'Компетенция'}
+                        label={cellLabel}
+                      icon={
+                        <div className="main-feedback-page__skill-icon-wrapper">
+                          {useSuccessIcon ? <SuccessAvatarIcon /> : useLeftAccessoryIcon ? (
+                            <img 
+                              src={leftAccessoryIcon} 
+                              alt="Left accessory icon" 
+                              width="44" 
+                              height="44"
+                            />
+                          ) : <WarningAvatarIcon />}
+                        </div>
+                      }
+                        onClick={() => {
+                          navigate(`/skill/${skill.id}`);
+                          setIsSidebarOpen(false);
+                        }}
+                      >
+                        {skill.label}
+                      </Cell>
+                    );
+                  });
                 })()
               ) : (
                 // Fallback: show competencies if no card is selected
